@@ -3,6 +3,17 @@ import abc, six
 
 @six.add_metaclass(abc.ABCMeta)
 class TreeParser:
+    """Abstract class for parsing gbm forest.
+
+    Attributes
+    ----------
+    d : dict
+        Dictionary for storing node hierarchy. Used not in all models. 
+    out_transform : string
+        Output transformation for generated value. For example, for logreg is used: 1 / (1 + exp(-{0})), where {0} stands for resulting gbvalue.
+    out_var_name : string
+        Name used for output variable.
+    """
     def __init__(self, out_transform="{0}", out_var_name="P_TARGET"):
         self.d = {}
         self.out_transform = out_transform

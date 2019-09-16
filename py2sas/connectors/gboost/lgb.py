@@ -2,16 +2,23 @@ from .core import TreeParser
 
 
 class LightgbmParser(TreeParser):
+    """Class for parsing lightgbm model.
+
+    Parameters
+    ----------
+    booster : lightgbm.basic.Booster
+        Booster of lightgbm model.
+    """
     def __init__(self, booster):
         super(LightgbmParser, self).__init__()
 
-        self.booster = booster
+        self._booster = booster
         
-        self.dump = booster.dump_model()
-        if self.dump['objective'] != 'binary sigmoid:1':
+        self._dump = booster.dump_model()
+        if self._dump['objective'] != 'binary sigmoid:1':
             raise Exception("Unfortunately only binary sigmoid objective function is supported right now. Your objective is %s. Please, open an issue at https://gitlab.sas.com/from-russia-with-love/lgb2sas." % self.dump['objective'])
 
-        self.features = self.dump['feature_names']
+        self._features = self._dump['feature_names']
         self.out_transform = "1 / (1 + exp(-{0}))"
 
 
@@ -20,7 +27,7 @@ class LightgbmParser(TreeParser):
 
 
     def _get_var(self, node):
-        return self.features[node['split_feature']]
+        return self._features[node['split_feature']]
 
 
     def _go_left(self, node):
@@ -56,5 +63,5 @@ class LightgbmParser(TreeParser):
 
     
     def iter_trees(self):
-        for tree in self.dump['tree_info']:
+        for tree in self._dump['tree_info']:
             yield tree['tree_index'], tree['tree_structure']

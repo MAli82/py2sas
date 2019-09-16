@@ -3,14 +3,23 @@ from .core import TreeParser
 
 
 class XgbParser(TreeParser):
+    """Class for parsing xgboost model.
+
+    Parameters
+    ----------
+    booster : xgboost.core.Booster
+        Booster of xgboost model.
+    objective : {'reg:linear', 'binary:logistic'}
+        Xgboost objective function.
+    """
     def __init__(self, booster, objective):
         super(XgbParser, self).__init__()
 
-        self.booster = booster
+        self._booster = booster
         
-        self.dump = booster.get_dump(dump_format='json')
-        self.objective = objective
-        self.features = booster.feature_names
+        self._dump = booster.get_dump(dump_format='json')
+        self._objective = objective
+        self._features = booster.feature_names
         
         if objective == 'binary:logistic':
             self.out_transform = "1 / (1 + exp(-{0}))"
@@ -69,5 +78,5 @@ class XgbParser(TreeParser):
 
     
     def iter_trees(self):
-        for booster_id, tree_json in enumerate(self.dump):
+        for booster_id, tree_json in enumerate(self._dump):
             yield booster_id, json.loads(tree_json)

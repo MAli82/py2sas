@@ -7,10 +7,17 @@ from .core import TreeParser
 
 
 class PmmlParser(TreeParser):
+    """Class for parsing pmml gradient boosting models.
+
+    Parameters
+    ----------
+    tree_root : etree.Element
+        Root node of pmml gradient boosting forest.
+    """
     def __init__(self, tree_root):
         super(PmmlParser, self).__init__()
 
-        self.tree_root = tree_root
+        self._tree_root = tree_root
         for elem in tree_root.getiterator():
             if not hasattr(elem.tag, 'find'): continue
             i = elem.tag.find('}')
@@ -20,9 +27,9 @@ class PmmlParser(TreeParser):
             raise RuntimeError("Lxml is not installed. Lxml is needed to parse xml files.") 
         objectify.deannotate(tree_root, cleanup_namespaces=True)
         
-        self.forest = tree_root.find('MiningModel/Segmentation')[0].find('MiningModel')
+        self._forest = tree_root.find('MiningModel/Segmentation')[0].find('MiningModel')
         
-        rescaleConstant = self.forest.find('Targets/Target').get('rescaleConstant')
+        rescaleConstant = self._forest.find('Targets/Target').get('rescaleConstant')
         self.out_transform = "1 / (1 + exp(-{}))".format("({0} + " + "{})".format(rescaleConstant))
 
 
@@ -68,5 +75,5 @@ class PmmlParser(TreeParser):
 
     
     def iter_trees(self):
-        for booster_id, tree_elem in enumerate(self.forest.find('Segmentation')):
+        for booster_id, tree_elem in enumerate(self._forest.find('Segmentation')):
             yield booster_id, tree_elem.find('TreeModel/Node')
