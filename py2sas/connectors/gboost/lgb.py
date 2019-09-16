@@ -62,6 +62,6 @@ class LightgbmParser(TreeParser):
         return node['leaf_value']
 
     
-    def iter_trees(self):
+    def _iter_trees(self):
         for tree in self._dump['tree_info']:
             yield tree['tree_index'], tree['tree_structure']

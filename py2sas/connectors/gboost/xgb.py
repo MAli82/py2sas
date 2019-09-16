@@ -77,6 +77,6 @@ class XgbParser(TreeParser):
         return node['leaf']
 
     
-    def iter_trees(self):
+    def _iter_trees(self):
         for booster_id, tree_json in enumerate(self._dump):
             yield booster_id, json.loads(tree_json)

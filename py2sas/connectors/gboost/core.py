@@ -75,11 +75,10 @@ class TreeParser:
 
 
     @abc.abstractmethod
-    def iter_trees(self):
+    def _iter_trees(self):
         pass
 
 
-    # Parse gboost node and write SAS code to file
     def _parse_node(self, node, booster_id, f, depth=0, indent=4):
         if self._not_leaf(node):
             var = self._get_var(node)[:32]
@@ -103,8 +102,15 @@ class TreeParser:
             f.write(" " * indent * depth + "gbValue{} = {};\n".format(booster_id, self._leaf_value(node)))
 
 
+    """Translates gradient boosting model and writes SAS scoring code to file.
+
+    Attributes
+    ----------
+    f : file object
+        Open file for writing output SAS code.
+    """
     def translate(self, f):
-        for booster_id, tree in self.iter_trees():
+        for booster_id, tree in self._iter_trees():
             f.write("/* Parsing tree {}*/\n".format(booster_id))
             
             self.d = dict()

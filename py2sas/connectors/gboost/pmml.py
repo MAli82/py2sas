@@ -74,6 +74,6 @@ class PmmlParser(TreeParser):
         return node.get('score')
 
     
-    def iter_trees(self):
+    def _iter_trees(self):
         for booster_id, tree_elem in enumerate(self._forest.find('Segmentation')):
             yield booster_id, tree_elem.find('TreeModel/Node')

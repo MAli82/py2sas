@@ -44,6 +44,18 @@ def _check_type(model):
     return parser
 
 
+"""Translates gradient boosting model and writes SAS scoring code to file.
+Supported models are: xgboost, lightgbm and pmml gradient boosting.
+
+Attributes
+----------
+inFile : str
+    Path to file to be translated.
+outFile : str
+    Path to output file with SAS code.
+outVarName : str (optional)
+    Output variable name.
+"""
 def py2sas(inFile, outFile, outVarName="P_TARGET"):
     # Load model file
     ext = ".pmml"
@@ -56,5 +68,6 @@ def py2sas(inFile, outFile, outVarName="P_TARGET"):
             model = pickle.load(mf)
 
     parser = _check_type(model)
+    parser.out_var_name = outVarName
     with open(outFile, "w") as f:
         parser.translate(f)
