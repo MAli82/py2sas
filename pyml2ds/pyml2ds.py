@@ -56,7 +56,7 @@ outFile : str
 outVarName : str (optional)
     Output variable name.
 """
-def py2sas(inFile, outFile, outVarName="P_TARGET"):
+def pyml2ds(inFile, outFile, outVarName="P_TARGET"):
     # Load model file
     ext = ".pmml"
     if inFile[-len(ext):] == ext:
