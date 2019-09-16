@@ -33,7 +33,7 @@ class XgbParser(TreeParser):
 
 
     def _get_var(self, node):
-        return node[self.split_name]
+        return node['split']
 
 
     def _go_left(self, node):

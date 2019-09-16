@@ -1,6 +1,7 @@
-import json
+import abc, six
 
 
+@six.add_metaclass(abc.ABCMeta)
 class TreeParser:
     def __init__(self, out_transform="{0}", out_var_name="P_TARGET"):
         self.d = {}
@@ -9,49 +10,60 @@ class TreeParser:
 
 
     def _gen_dict(self, node):
-        pass
+        self.d = {}
 
 
+    @abc.abstractmethod
     def _not_leaf(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _get_var(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _go_left(self, node):
         pass
 
-    
+
+    @abc.abstractmethod
     def _go_right(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _left_node(self, node):
         pass
 
-    
+
+    @abc.abstractmethod
     def _right_node(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _missing_node(self, node):
         pass
 
-    
+
+    @abc.abstractmethod
     def _split_value(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _decision_type(self, node):
         pass
 
 
+    @abc.abstractmethod
     def _leaf_value(self, node):
         pass
 
 
+    @abc.abstractmethod
     def iter_trees(self):
         pass
 
