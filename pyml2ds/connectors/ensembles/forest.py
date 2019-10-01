@@ -86,4 +86,4 @@ class ForestParser(EnsembleParser):
 
     
     def _aggregate(self, booster_count):
-        return "treeValue = sum({}) / %d;\n".format(', '.join(["treeValue%d" % i for i in range(booster_count)]), booster_count)
+        return "treeValue = sum({}) / {};\n".format(', '.join(["treeValue%d" % i for i in range(booster_count)]), booster_count)
