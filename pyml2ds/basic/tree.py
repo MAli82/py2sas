@@ -1,4 +1,6 @@
 import abc, six
+import sys
+import unicodedata
 
 @six.add_metaclass(abc.ABCMeta)
 class TreeParser:
@@ -93,6 +95,17 @@ class TreeParser:
         pass
 
 
+    def _remove_diacritic(self, input):
+        if sys.hexversion >= 0x3000000:
+            output = unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore').decode()
+        else:
+            # On Python < 3.0.0
+            if type(input) == str:
+                input = unicode(input, 'ISO-8859-1')
+            output = unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore')
+        
+        return output
+
 
     """Recursively parses tree node and writes generated SAS code to file.
 
@@ -118,6 +131,7 @@ class TreeParser:
 
         if self._not_leaf():
             var = self._get_var()[:32]
+            var = self._remove_diacritic(var)
             cond = ""
             if self._go_left():
                 cond = "missing({}) or ".format(var)
