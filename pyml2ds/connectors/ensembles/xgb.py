@@ -74,18 +74,18 @@ class XgbParser(EnsembleParser):
         super(XgbParser, self).__init__()
 
         self._booster = booster
-        
+
         self._dump = booster.get_dump(dump_format='json')
         self._objective = objective
         self._features = booster.feature_names
-        
+
         if objective == 'binary:logistic':
             self.out_transform = "1 / (1 + exp(-{0}))"
-        elif objective == 'reg:linear':
-            pass
-        else:
-            raise Exception("Unsupported objective: %s. Supported objectives are: binary:logistic and reg:linear." % objective)
-        
+        elif objective != 'reg:linear':
+            raise Exception(
+                f"Unsupported objective: {objective}. Supported objectives are: binary:logistic and reg:linear."
+            )
+
         self._tree_parser = XgbTreeParser()
     
     def _iter_trees(self):

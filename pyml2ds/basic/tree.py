@@ -97,14 +97,11 @@ class TreeParser:
 
     def _remove_diacritic(self, input):
         if sys.hexversion >= 0x3000000:
-            output = unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore').decode()
-        else:
-            # On Python < 3.0.0
-            if type(input) == str:
-                input = unicode(input, 'ISO-8859-1')
-            output = unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore')
-        
-        return output
+            return unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore').decode()
+        # On Python < 3.0.0
+        if type(input) == str:
+            input = unicode(input, 'ISO-8859-1')
+        return unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore')
 
 
     """Recursively parses tree node and writes generated SAS code to file.
@@ -118,11 +115,7 @@ class TreeParser:
     """
     def parse_node(self, f, node=None):
         pnode = self._node
-        if node is not None:
-            self._node = node
-        else:
-            self._node = self._root
-
+        self._node = node if node is not None else self._root
         if self._node == self._root:
             self.d = dict()
             self._gen_dict()
@@ -134,22 +127,26 @@ class TreeParser:
             var = self._remove_diacritic(var)
             cond = ""
             if self._go_left():
-                cond = "missing({}) or ".format(var)
+                cond = f"missing({var}) or "
             elif self._go_right():
-                cond = "not missing({}) and ".format(var)
+                cond = f"not missing({var}) and "
             else:
-                f.write(self._get_indent() + "if (missing({})) then do;\n".format(var))
+                f.write(f"{self._get_indent()}if (missing({var})) then do;\n")
                 self.parse_node(f, node=self._missing_node())
                 f.write(self._get_indent() + "end;\n")
-            
-            f.write(self._get_indent() + "if ({}{} {} {}) then do;\n".format(cond, var, self._decision_type(), self._split_value()))
+
+            f.write(
+                f"{self._get_indent()}if ({cond}{var} {self._decision_type()} {self._split_value()}) then do;\n"
+            )
             self.parse_node(f, node=self._left_node())
             f.write(self._get_indent() + "end;\n")
             f.write(self._get_indent() + "else do;\n")
             self.parse_node(f, node=self._right_node())
             f.write(self._get_indent() + "end;\n")
         else:
-            f.write(self._get_indent() + "treeValue{} = {};\n".format(self._tree_id, self._leaf_value()))
-        
+            f.write(
+                f"{self._get_indent()}treeValue{self._tree_id} = {self._leaf_value()};\n"
+            )
+
         self._node = pnode
         self._depth -= 1

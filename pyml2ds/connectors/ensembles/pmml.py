@@ -24,7 +24,7 @@ class PmmlTreeParser(TreeParser):
 
     
     def _go_right(self):
-        return (not self._node.find('Node').get('id') == self._node.get('defaultChild'))
+        return self._node.find('Node').get('id') != self._node.get('defaultChild')
 
 
     def _left_node(self):
@@ -70,13 +70,15 @@ class PmmlParser(EnsembleParser):
             if i >= 0:
                 elem.tag = elem.tag[i+1:]
         if objectify is None:
-            raise RuntimeError("Lxml is not installed. Lxml is needed to parse xml files.") 
+            raise RuntimeError("Lxml is not installed. Lxml is needed to parse xml files.")
         objectify.deannotate(tree_root, cleanup_namespaces=True)
-        
+
         self._forest = tree_root.find('MiningModel/Segmentation')[0].find('MiningModel')
-        
+
         rescaleConstant = self._forest.find('Targets/Target').get('rescaleConstant')
-        self.out_transform = "1 / (1 + exp(-{}))".format("({0} + " + "{})".format(rescaleConstant))
+        self.out_transform = "1 / (1 + exp(-{}))".format(
+            "({0} + " + f"{rescaleConstant})"
+        )
 
         self._tree_parser = PmmlTreeParser()
 

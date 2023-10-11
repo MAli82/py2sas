@@ -29,12 +29,14 @@ from .connectors import XgbParser, LightgbmParser, PmmlParser, ForestParser
 
 
 def _check_type(model):
-    comp_types = ["xgboost.sklearn.XGBModel", "lightgbm.LGBMModel", "lightgbm.basic.Booster", "sklearn.ensemble.RandomForestClassifier", "GBM.pmml file"]
-
     parser = None
     if xgboost and isinstance(model, xgboost.sklearn.XGBModel):
         if model.booster not in ['gbtree', 'dart']:
-            raise RuntimeError("Model is xgboost. Unsupported booster type: %s. Supported types are: %s" % (model.booster, ', '.join(comp_types)))
+            comp_types = ["xgboost.sklearn.XGBModel", "lightgbm.LGBMModel", "lightgbm.basic.Booster", "sklearn.ensemble.RandomForestClassifier", "GBM.pmml file"]
+
+            raise RuntimeError(
+                f"Model is xgboost. Unsupported booster type: {model.booster}. Supported types are: {', '.join(comp_types)}"
+            )
 
         parser = XgbParser(model.get_booster(), model.objective)
     elif lightgbm and isinstance(model, lightgbm.LGBMModel):
