@@ -81,9 +81,8 @@ class ForestParser(EnsembleParser):
 
 
     def _iter_trees(self):
-        for i, tree in enumerate(self._model.estimators_):
-            yield i, tree
+        yield from enumerate(self._model.estimators_)
 
     
     def _aggregate(self, booster_count):
-        return "treeValue = sum({}) / {};\n".format(', '.join(["treeValue%d" % i for i in range(booster_count)]), booster_count)
+        return f"""treeValue = sum({', '.join(["treeValue%d" % i for i in range(booster_count)])}) / {booster_count};\n"""

@@ -23,7 +23,7 @@ class EnsembleParser:
 
     
     def _aggregate(self, booster_count):
-        return "treeValue = sum({});\n".format(', '.join(["treeValue%d" % i for i in range(booster_count)]))
+        return f"""treeValue = sum({', '.join(["treeValue%d" % i for i in range(booster_count)])});\n"""
 
 
     """Translates gradient boosting model and writes SAS scoring code to file.
@@ -35,13 +35,13 @@ class EnsembleParser:
     """
     def translate(self, f):
         for booster_id, tree in self._iter_trees():
-            f.write("/* Parsing tree {}*/\n".format(booster_id))
-            
+            f.write(f"/* Parsing tree {booster_id}*/\n")
+
             self._tree_parser.init(tree, booster_id)
             self._tree_parser.parse_node(f)
-            
+
             f.write("\n")
-        
+
         f.write("/* Getting target probability */\n")
         f.write(self._aggregate(booster_id + 1))
-        f.write("{} = {};\n".format(self.out_var_name, self.out_transform.format("treeValue")))
+        f.write(f'{self.out_var_name} = {self.out_transform.format("treeValue")};\n')

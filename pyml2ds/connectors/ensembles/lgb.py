@@ -58,10 +58,12 @@ class LightgbmParser(EnsembleParser):
         super(LightgbmParser, self).__init__()
 
         self._booster = booster
-        
+
         self._dump = booster.dump_model()
         if self._dump['objective'] != 'binary sigmoid:1':
-            raise Exception("Unfortunately only binary sigmoid objective function is supported right now. Your objective is %s. Please, open an issue at https://gitlab.sas.com/from-russia-with-love/lgb2sas." % self.dump['objective'])
+            raise Exception(
+                f"Unfortunately only binary sigmoid objective function is supported right now. Your objective is {self.dump['objective']}. Please, open an issue at https://gitlab.sas.com/from-russia-with-love/lgb2sas."
+            )
 
         self._features = self._dump['feature_names']
         self.out_transform = "1 / (1 + exp(-{0}))"
